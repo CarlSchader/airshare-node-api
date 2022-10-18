@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const { query, validationResult } = require('express-validator');
-const bodyParser = require('body-parser');
 
 const {uploadFile} = require('./object-storage/object-storage');
 
@@ -21,9 +20,11 @@ app.get('/', (req, res)  => res.sendStatus(200));
 
 // TODO: see if you can specify all content-types with express.raw
 // TODO: figure out how to do large files
-app.use('/api/file', (req, res, next) => {
-  express.raw({type: req.header('content-type')})(req, res, next);
-});
+function rawBodyMiddleWare(req, res, next) {
+  return express.raw({type: req.header('content-type')})(req, res, next);
+}
+
+app.use('/api/file', rawBodyMiddleWare);
 
 app.post(
   '/api/file',
