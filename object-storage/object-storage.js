@@ -14,11 +14,21 @@ function verifyFileName(fileName) {
   }
 }
 
-function uploadFile(userId, fileName, bytes, callback) {
-  verifyFileName(fileName);
-  provider.uploadFile(userId, fileName, bytes, callback);
+function uploadFile(req, res) {
+  const userId = 'test-user';
+  verifyFileName(req.query.fileName);
+  provider.uploadFile(userId, req.query.fileName, req.body, req.headers)
+  return res.sendStatus(200);
+}
+
+function retrieveFile(req, res) {
+  verifyFileName(req.params.fileName);
+  const {data, metaData} = provider.retrieveFile(req.params.userId, req.params.fileName);
+  res.type(metaData['content-type']);
+  res.send(data);
 }
 
 module.exports = {
-  uploadFile: uploadFile
+  uploadFile: uploadFile,
+  retrieveFile: retrieveFile,
 }
